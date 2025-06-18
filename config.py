@@ -63,8 +63,8 @@ HTML_OUTPUT_PATH = 'crypto_analysis_report.html'
 LOG_FILE_PATH = 'crypto_bot.log'
 
 # Time Settings
-TIMEZONE = 'UTC'
-DATE_FORMAT = '%Y/%m/%d - %H:%M'
+TIMEZONE = 'Asia/Tehran'
+DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 # HTML Template Settings
 HTML_TITLE = "Crypto Futures Analysis Report"
