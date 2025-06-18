@@ -31,7 +31,7 @@ TELEGRAM_CHAT_ID = "55174977"
 
 # Analysis Settings
 REPORT_INTERVAL_HOURS = 2  # Every 2 hours
-CRYPTO_COUNT = 100  # Analyze 100 cryptocurrencies
+CRYPTO_COUNT = 200  # Analyze 200 cryptocurrencies
 SIGNAL_COUNT = 10   # Generate 10 trading signals
 TIMEFRAME = '1h'    # 1 hour timeframe for analysis
 
