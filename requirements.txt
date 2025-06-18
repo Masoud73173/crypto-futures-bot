@@ -11,3 +11,4 @@ asyncio>=3.4.3
 datetime>=4.3
 pytz>=2023.3
 logging>=0.4.9.6
+flask>=2.3.0
