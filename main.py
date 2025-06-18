@@ -10,7 +10,6 @@ import pandas as pd
 import numpy as np
 import ta
 import requests
-import schedule
 import time
 import logging
 import json
@@ -721,28 +720,67 @@ class CryptoAnalyzer:
         except Exception as e:
             logger.error(f"❌ Error in analysis cycle: {str(e)}")
 
+from flask import Flask, jsonify
+import os
+
+app = Flask(__name__)
+analyzer = CryptoAnalyzer()
+
+@app.route('/')
+def index():
+    """Home page"""
+    return jsonify({
+        "status": "✅ Crypto Futures Analysis Bot is running!",
+        "service": "crypto-futures-bot",
+        "version": "1.0",
+        "endpoints": {
+            "/analyze": "Trigger manual analysis",
+            "/status": "Check bot status"
+        }
+    })
+
+@app.route('/analyze')
+async def trigger_analysis():
+    """Trigger analysis manually"""
+    try:
+        logger.info("🚀 Manual analysis triggered via HTTP request")
+        await analyzer.run_analysis()
+        return jsonify({
+            "status": "success",
+            "message": "✅ Analysis completed successfully!",
+            "timestamp": datetime.now(pytz.UTC).strftime(config.DATE_FORMAT)
+        })
+    except Exception as e:
+        logger.error(f"❌ Analysis failed: {str(e)}")
+        return jsonify({
+            "status": "error", 
+            "message": f"❌ Analysis failed: {str(e)}"
+        }), 500
+
+@app.route('/status')
+def status():
+    """Check bot status"""
+    return jsonify({
+        "status": "running",
+        "service": "crypto-futures-bot",
+        "config": {
+            "crypto_count": config.CRYPTO_COUNT,
+            "report_interval": f"{config.REPORT_INTERVAL_HOURS} hours",
+            "telegram_user": config.USER_INFO['username'],
+            "outputs": config.OUTPUT_SETTINGS
+        },
+        "timestamp": datetime.now(pytz.UTC).strftime(config.DATE_FORMAT)
+    })
+
 def main():
-    """Main function to run the bot"""
+    """Main function to run the Flask app"""
     logger.info("🤖 Crypto Futures Analysis Bot Starting...")
     logger.info(f"📊 Configuration: {config.CRYPTO_COUNT} cryptos every {config.REPORT_INTERVAL_HOURS} hours")
     logger.info(f"📱 Telegram: {config.USER_INFO['username']} ({config.USER_INFO['chat_id']})")
+    logger.info("🌐 Starting HTTP service on port 8080...")
     
-    analyzer = CryptoAnalyzer()
-    
-    # Schedule the analysis
-    schedule.every(config.REPORT_INTERVAL_HOURS).hours.do(
-        lambda: asyncio.run(analyzer.run_analysis())
-    )
-    
-    # Run initial analysis
-    logger.info("🚀 Running initial analysis...")
-    asyncio.run(analyzer.run_analysis())
-    
-    # Keep the bot running
-    logger.info(f"⏰ Bot scheduled to run every {config.REPORT_INTERVAL_HOURS} hours")
-    while True:
-        schedule.run_pending()
-        time.sleep(60)  # Check every minute
+    port = int(os.environ.get('PORT', 8080))
+    app.run(host='0.0.0.0', port=port, debug=False)
 
 if __name__ == "__main__":
     main()
