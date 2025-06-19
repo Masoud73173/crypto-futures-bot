@@ -30,7 +30,7 @@ def get_local_time():
         local_tz = pytz.timezone(config.TIMEZONE)
         return utc_now.replace(tzinfo=pytz.UTC).astimezone(local_tz)
     except:
-        return datetime.now()
+        return format_timestamp()
 
 def format_timestamp(dt=None):
     """Format timestamp in local timezone"""
