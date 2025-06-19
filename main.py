@@ -1,4 +1,3 @@
-# Timezone fix - Force deploy 2025-06-19
 import os
 import json
 import logging
